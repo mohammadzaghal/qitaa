@@ -22,6 +22,7 @@ export function MapExplorer() {
   const mapRef = useRef<MLMap | null>(null);
   const [selected, setSelected] = useState<ParcelProps | null>(null);
   const [ready, setReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [mode, setMode] = useState<"invest" | "market" | "gap">("invest");
 
   // pmtiles:// protocol must be registered before any map instance is created.
@@ -52,6 +53,7 @@ export function MapExplorer() {
     map.addControl(new maplibregl.ScaleControl({ unit: "metric" }), "bottom-left");
 
     map.on("load", async () => {
+      try {
       // ---- terrain ------------------------------------------------------
       map.addSource("dem", {
         type: "raster-dem",
@@ -97,6 +99,12 @@ export function MapExplorer() {
 
       // ---- cadastral parcels -------------------------------------------
       const res = await fetch("/data/amman-parcels.geojson");
+      if (!res.ok) {
+        throw new Error(
+          `Could not load /data/amman-parcels.geojson (HTTP ${res.status}). ` +
+            `Run \`node scripts/gen-parcels.mjs\` from the repo root.`,
+        );
+      }
       const parcels = await res.json();
       map.addSource("parcels", { type: "geojson", data: parcels, promoteId: "id" });
 
@@ -147,6 +155,15 @@ export function MapExplorer() {
       });
 
       setReady(true);
+      } catch (err) {
+        console.error("[qitaa] map init failed", err);
+        setError(err instanceof Error ? err.message : String(err));
+      }
+    });
+
+    map.on("error", (e) => {
+      // Style/tile fetch failures arrive here, not as thrown exceptions.
+      console.error("[qitaa] maplibre error", e.error ?? e);
     });
 
     return () => {
@@ -192,8 +209,18 @@ export function MapExplorer() {
       <Legend mode={mode} />
 
       {!ready && (
-        <div className="absolute inset-0 z-20 grid place-items-center bg-basalt-950">
-          <p className="animate-pulse text-sm text-sand-300/60">Loading Amman…</p>
+        <div className="absolute inset-0 z-20 grid place-items-center bg-basalt-950 p-8">
+          {error ? (
+            <div className="max-w-md text-center">
+              <p className="text-sm font-semibold text-petra-400">Map failed to load</p>
+              <p className="mt-2 text-xs leading-relaxed text-sand-300/60">{error}</p>
+              <p className="mt-3 text-[11px] text-sand-300/40">
+                Full details are in the browser console.
+              </p>
+            </div>
+          ) : (
+            <p className="animate-pulse text-sm text-sand-300/60">Loading Amman…</p>
+          )}
         </div>
       )}
 

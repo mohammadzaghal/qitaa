@@ -1,4 +1,4 @@
-import { MapExplorer } from "@/components/MapExplorer";
+import { MapExplorer } from "@/components/MapExplorer.client";
 
 export default function Page() {
   return <MapExplorer />;
