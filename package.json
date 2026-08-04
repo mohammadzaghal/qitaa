@@ -1,0 +1,24 @@
+{
+  "name": "qitaa",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Qitaa (قطعة) — 3D spatial real-estate marketplace & fractional co-investment platform for Jordan",
+  "workspaces": ["packages/*", "apps/*"],
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "npm run dev --workspace=@qitaa/web",
+    "dev:api": "npm run dev --workspace=@qitaa/api",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "db:up": "docker compose up -d postgres",
+    "db:migrate": "npm run migrate --workspace=@qitaa/db",
+    "db:seed": "npm run seed --workspace=@qitaa/db",
+    "tiles": "bash infra/tiles/build-tiles.sh"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5",
+    "tsx": "^4.19.2"
+  }
+}

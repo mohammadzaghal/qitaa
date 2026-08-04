@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+html, body { height: 100%; background: #0a0c10; }
+.maplibregl-ctrl-attrib { font-size: 10px; }
+.maplibregl-popup-content { background: #1c1f26; color: #f2ede4; border-radius: 10px; }

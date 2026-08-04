@@ -1,0 +1,12 @@
+{
+  "name": "@qitaa/db",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "migrate": "psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -f migrations/0001_core.sql",
+    "seed": "tsx src/seed.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": { "postgres": "^3.4.5" },
+  "devDependencies": { "tsx": "^4.19.2" }
+}
